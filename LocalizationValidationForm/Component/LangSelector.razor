@@ -1,0 +1,31 @@
+@using System.Globalization
+@using Blazored.LocalStorage
+
+@inject ILocalStorageService LocalStorage 
+@inject NavigationManager NavigationManager
+
+<p>Date In Lang selector: @DateTime.Now.ToLongDateString()</p>
+<p>Current Culture: @CultureInfo.CurrentCulture</p>
+
+<p>
+    <select @onchange="ChangeLang">
+        <option disabled>Choose your language</option>
+        @foreach (var lang in _supportedLanguage)
+        {
+            <option value="@lang" selected="@(CultureInfo.CurrentCulture.Name == lang)">@lang</option>
+        }
+    </select>
+</p>
+
+@code {
+    private string[] _supportedLanguage = new[] { "fr", "en" };
+
+    private async void ChangeLang(ChangeEventArgs args)
+    {
+        var lang = (string)args.Value!;
+
+        await LocalStorage.SetItemAsStringAsync("lang", lang);
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad:true);
+    }
+    
+}
